@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
 	"github.com/joho/godotenv"
@@ -47,7 +48,14 @@ func main() {
 	var service = handlers.NewProfile(rd, tk)
 
 	var router = gin.Default()
-
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"POST"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	router.POST("/login", service.Login)
 	router.POST("/logout", middleware.TokenAuthMiddleware(), service.Logout)
 	router.POST("/refresh", service.Refresh)
