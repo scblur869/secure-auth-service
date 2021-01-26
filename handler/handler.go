@@ -34,8 +34,8 @@ var user = User{
 	ID:          "1",
 	Username:    "tsadmin",
 	Password:    "tsadmin",
-	Email:       "admin@tempra-sure.com",
-	DisplayName: "Tempra-Sure Admin",
+	Email:       "admin@temper-sure.com",
+	DisplayName: "Temper-Sure Admin",
 	Role:        "admin",
 }
 
