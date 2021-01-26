@@ -50,7 +50,7 @@ func main() {
 	var router = gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"POST"},
+		AllowMethods:     []string{"POST", "HEAD", "OPTIONS", "GET", "PUT"},
 		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
