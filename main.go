@@ -4,7 +4,6 @@ import (
 	"context"
 	"local/auth-svc/auth"
 	handlers "local/auth-svc/handler"
-	"local/auth-svc/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -56,9 +55,10 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	router.POST("/login", service.Login)
-	router.POST("/logout", middleware.TokenAuthMiddleware(), service.Logout)
-	router.POST("/refresh", service.Refresh)
+
+	router.POST("/create-session", service.SendLoginCookie)
+	router.POST("/logout-session", service.LogoutSession)
+	router.POST("/refresh-session", service.RefreshSession)
 
 	srv := &http.Server{
 		Addr:    appAddr,

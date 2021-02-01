@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"fmt"
@@ -45,6 +45,7 @@ type Todo struct {
 	Body   string `json:"body"`
 }
 
+// login function
 func (h *profileHandler) Login(c *gin.Context) {
 	var u User
 	if err := c.ShouldBindJSON(&u); err != nil {
@@ -73,6 +74,7 @@ func (h *profileHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, tokens)
 }
 
+// logout function
 func (h *profileHandler) Logout(c *gin.Context) {
 	//If metadata is passed and the tokens valid, delete them from the redis store
 	metadata, _ := h.tk.ExtractTokenMetadata(c.Request)
@@ -86,29 +88,7 @@ func (h *profileHandler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, "Successfully logged out")
 }
 
-func (h *profileHandler) CreateTodo(c *gin.Context) {
-	var td Todo
-	if err := c.ShouldBindJSON(&td); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, "invalid json")
-		return
-	}
-	metadata, err := h.tk.ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	userId, err := h.rd.FetchAuth(metadata.TokenUuid)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	td.UserID = userId
-
-	//you can proceed to save the  to a database
-
-	c.JSON(http.StatusCreated, td)
-}
-
+// token refresh function
 func (h *profileHandler) Refresh(c *gin.Context) {
 	mapToken := map[string]string{}
 	if err := c.ShouldBindJSON(&mapToken); err != nil {
