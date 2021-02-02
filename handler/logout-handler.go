@@ -12,8 +12,12 @@ import (
 // logout function
 func (h *profileHandler) LogoutSession(c *gin.Context) {
 	mapToken := map[string]string{}
-	ck, _ := c.Cookie("ts-cookie")
-
+	ck, ckErr := c.Cookie("ts-cookie")
+	if ckErr != nil {
+		fmt.Println(ckErr)
+		c.JSON(http.StatusBadRequest, "data requirement not met")
+		return
+	}
 	if err := json.Unmarshal([]byte(ck), &mapToken); err != nil {
 		fmt.Println(err)
 	}
@@ -22,7 +26,11 @@ func (h *profileHandler) LogoutSession(c *gin.Context) {
 	if terr != nil {
 		fmt.Println("error resolving token map")
 	}
-	metadata, _ := h.tk.ResolveToken(token)
+	metadata, merr := h.tk.ResolveToken(token)
+	if merr != nil {
+		fmt.Println(merr)
+		return
+	}
 	if metadata != nil {
 		deleteErr := h.rd.DeleteTokens(metadata)
 		if deleteErr != nil {

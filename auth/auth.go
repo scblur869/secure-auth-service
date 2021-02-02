@@ -9,7 +9,7 @@ import (
 )
 
 type AuthInterface interface {
-	CreateAuth(string, *TokenDetails) error
+	CreateAuth(int, *TokenDetails) error
 	FetchAuth(string) (string, error)
 	DeleteRefresh(string) error
 	DeleteTokens(*AccessDetails) error
@@ -43,7 +43,7 @@ type TokenDetails struct {
 }
 
 //Save token metadata to Redis
-func (tk *service) CreateAuth(userId string, td *TokenDetails) error {
+func (tk *service) CreateAuth(userId int, td *TokenDetails) error {
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()

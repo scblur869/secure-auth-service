@@ -56,9 +56,9 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	router.POST("/create-session", service.SendLoginCookie)
-	router.POST("/logout-session", service.LogoutSession)
-	router.POST("/refresh-session", service.RefreshSession)
+	router.POST("/api/v1/login", service.SendLoginCookie)
+	router.POST("/api/v1/logout", service.LogoutSession)
+	router.POST("/api/v1/refresh", service.RefreshSession)
 
 	srv := &http.Server{
 		Addr:    appAddr,

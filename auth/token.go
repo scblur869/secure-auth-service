@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,21 +20,20 @@ func NewToken() *tokenservice {
 }
 
 type TokenInterface interface {
-	CreateToken(userId string, userEmail string, displayName string, role string) (*TokenDetails, error)
-	ExtractTokenMetadata(*http.Request) (*AccessDetails, error)
+	CreateToken(userId int, userEmail string, displayName string, role string) (*TokenDetails, error)
 	ResolveToken(token *jwt.Token) (*AccessDetails, error)
 }
 
 //Token implements the TokenInterface
 var _ TokenInterface = &tokenservice{}
 
-func (t *tokenservice) CreateToken(userId string, userEmail string, displayName string, role string) (*TokenDetails, error) {
+func (t *tokenservice) CreateToken(userId int, userEmail string, displayName string, role string) (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 30).Unix() //expires after 30 min
 	td.TokenUuid = uuid.NewV4().String()
 
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUuid = td.TokenUuid + "++" + userId
+	td.RefreshUuid = td.TokenUuid + "++" + strconv.Itoa(userId)
 
 	var err error
 	//Creating Access Token
@@ -52,7 +52,7 @@ func (t *tokenservice) CreateToken(userId string, userEmail string, displayName 
 
 	//Creating Refresh Token
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUuid = td.TokenUuid + "++" + userId
+	td.RefreshUuid = td.TokenUuid + "++" + strconv.Itoa(userId)
 
 	rtClaims := jwt.MapClaims{}
 	rtClaims["refresh_uuid"] = td.RefreshUuid
@@ -70,36 +70,11 @@ func (t *tokenservice) CreateToken(userId string, userEmail string, displayName 
 	return td, nil
 }
 
-func TokenValid(r *http.Request) error {
-	token, err := verifyToken(r)
-	if err != nil {
-		return err
-	}
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-		return err
-	}
-	return nil
-}
-
-func verifyToken(r *http.Request) (*jwt.Token, error) {
-	tokenString := extractToken(r)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return token, nil
-}
-
 func VerifyTokenMap(tokenString string) (*jwt.Token, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("possible incorrect algorithm: %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("ACCESS_SECRET")), nil
 	})
@@ -141,18 +116,6 @@ func extract(token *jwt.Token) (*AccessDetails, error) {
 		}
 	}
 	return nil, errors.New("something went wrong")
-}
-
-func (t *tokenservice) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
-	token, err := verifyToken(r)
-	if err != nil {
-		return nil, err
-	}
-	acc, err := extract(token)
-	if err != nil {
-		return nil, err
-	}
-	return acc, nil
 }
 
 func (t *tokenservice) ResolveToken(token *jwt.Token) (*AccessDetails, error) {

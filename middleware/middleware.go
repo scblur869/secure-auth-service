@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// deprecated
+// deprecated for now, token validation is done in the handler
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		mapToken := map[string]string{}
