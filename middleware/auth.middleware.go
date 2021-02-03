@@ -12,10 +12,11 @@ import (
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		mapToken := map[string]string{}
-		ck, _ := c.Cookie("ts-cookie")
-
-		if err := json.Unmarshal([]byte(ck), &mapToken); err != nil {
+		ck, err := c.Cookie("ts-cookie")
+		if err != nil {
 			fmt.Println(err)
+		}
+		if err := json.Unmarshal([]byte(ck), &mapToken); err != nil {
 		}
 
 		token, terr := auth.VerifyTokenMap(mapToken["access_token"])
