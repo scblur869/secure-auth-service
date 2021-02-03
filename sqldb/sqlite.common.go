@@ -75,3 +75,75 @@ func QueryByParam(database *sql.DB, query string, param string) (handler.User, e
 	database.Close()
 	return rowData, err
 }
+
+func UpdateAccountInfo(db *sql.DB, user handler.User) error {
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback()
+
+	stmt, err := db.Prepare("UPDATE accounts SET username=?,display_name=?,email=?,role=?,password=? WHERE id = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.Password, user.ID); err != nil {
+		fmt.Println(err)
+	}
+	if err := tx.Commit(); err != nil {
+		fmt.Println(err)
+	}
+	db.Close()
+	return err
+}
+
+func DeleteAccount(db *sql.DB, user handler.User) error {
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback()
+
+	stmt, err := db.Prepare("DELETE FROM accounts WHERE id = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(user.ID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	affect, err := res.RowsAffected()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(affect)
+	db.Close()
+	return err
+}
+
+func AddAccountInfo(db *sql.DB, user handler.User) error {
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tx.Rollback()
+
+	stmt, err := db.Prepare("INSERT INTO accounts(username,display_name,email,role,password) VALUES(?,?,?,?,?)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.Password); err != nil {
+		fmt.Println(err)
+	}
+	if err := tx.Commit(); err != nil {
+		fmt.Println(err)
+	}
+	db.Close()
+	return err
+}
