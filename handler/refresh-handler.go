@@ -50,11 +50,13 @@ func (h *profileHandler) RefreshSession(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, err)
 			return
 		}
-		userId, roleOk := claims["user_id"].(int)
+
+		userId, roleOk := claims["user_id"].(string)
 		userEmail, _ := claims["email"].(string)
 		displayName, _ := claims["display_name"].(string)
 		userRole, _ := claims["role"].(string)
 		if roleOk == false {
+			fmt.Println("roleOk ", roleOk)
 			c.JSON(http.StatusUnprocessableEntity, "unauthorized")
 			return
 		}

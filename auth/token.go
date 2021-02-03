@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -20,20 +19,20 @@ func NewToken() *tokenservice {
 }
 
 type TokenInterface interface {
-	CreateToken(userId int, userEmail string, displayName string, role string) (*TokenDetails, error)
+	CreateToken(userId string, userEmail string, displayName string, role string) (*TokenDetails, error)
 	ResolveToken(token *jwt.Token) (*AccessDetails, error)
 }
 
 //Token implements the TokenInterface
 var _ TokenInterface = &tokenservice{}
 
-func (t *tokenservice) CreateToken(userId int, userEmail string, displayName string, role string) (*TokenDetails, error) {
+func (t *tokenservice) CreateToken(userId string, userEmail string, displayName string, role string) (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 30).Unix() //expires after 30 min
 	td.TokenUuid = uuid.NewV4().String()
 
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUuid = td.TokenUuid + "++" + strconv.Itoa(userId)
+	td.RefreshUuid = td.TokenUuid + "++" + userId
 
 	var err error
 	//Creating Access Token
@@ -52,7 +51,7 @@ func (t *tokenservice) CreateToken(userId int, userEmail string, displayName str
 
 	//Creating Refresh Token
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUuid = td.TokenUuid + "++" + strconv.Itoa(userId)
+	td.RefreshUuid = td.TokenUuid + "++" + userId
 
 	rtClaims := jwt.MapClaims{}
 	rtClaims["refresh_uuid"] = td.RefreshUuid

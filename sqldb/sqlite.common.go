@@ -147,3 +147,37 @@ func AddAccountInfo(db *sql.DB, user handler.User) error {
 	db.Close()
 	return err
 }
+
+func GetAllAccounts(database *sql.DB) ([]handler.User, error) {
+
+	var rowData handler.User
+	var results []handler.User
+	query := "SELECT id, username, display_name, email, role FROM accounts"
+	rows, err := database.Query(query)
+	var id int
+	var username string
+	var display_name string
+	var email string
+	var role string
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	for rows.Next() {
+		err = rows.Scan(&id, &username, &display_name, &email, &role)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rowData.ID = id
+		rowData.Username = username
+		rowData.DisplayName = display_name
+		rowData.Email = email
+		rowData.Role = role
+		results = append(results, rowData)
+
+	}
+	rows.Close()
+	database.Close()
+	return results, err
+}

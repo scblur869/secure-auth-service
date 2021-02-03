@@ -16,7 +16,7 @@ func FindUserByUserName(user handler.User) (handler.User, error) {
 	return user, err
 }
 
-func UpdateUserByUserId(user handler.User) (handler.User, error) {
+func UpdateUser(user handler.User) (handler.User, error) {
 	database := SQLConnect()
 
 	err := UpdateAccountInfo(database, user)
@@ -26,7 +26,7 @@ func UpdateUserByUserId(user handler.User) (handler.User, error) {
 	return user, err
 }
 
-func DeleteUserByUserId(user handler.User) error {
+func DeleteUser(user handler.User) error {
 	database := SQLConnect()
 
 	err := DeleteAccount(database, user)
@@ -34,4 +34,24 @@ func DeleteUserByUserId(user handler.User) error {
 		fmt.Print(err)
 	}
 	return err
+}
+
+func ListAllAccounts() ([]handler.User, error) {
+	database := SQLConnect()
+
+	users, err := GetAllAccounts(database)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return users, err
+}
+
+func AddNewAccount(user handler.User) (handler.User, error) {
+	database := SQLConnect()
+
+	err := AddAccountInfo(database, user)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return user, err
 }

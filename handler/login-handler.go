@@ -3,12 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 	var u User
+	strconv.Itoa(user.ID)
 	if err := c.ShouldBindJSON(&u); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
@@ -18,12 +20,12 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, "Please provide valid login details")
 		return
 	}
-	ts, err := h.tk.CreateToken(user.ID, user.Email, user.DisplayName, user.Role)
+	ts, err := h.tk.CreateToken(strconv.Itoa(user.ID), user.Email, user.DisplayName, user.Role)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	saveErr := h.rd.CreateAuth(user.ID, ts)
+	saveErr := h.rd.CreateAuth(strconv.Itoa(user.ID), ts)
 	if saveErr != nil {
 		c.JSON(http.StatusUnprocessableEntity, saveErr.Error())
 		return

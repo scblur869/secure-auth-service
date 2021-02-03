@@ -4,6 +4,9 @@ import (
 	"context"
 	"local/auth-svc/auth"
 	handlers "local/auth-svc/handler"
+	"local/auth-svc/middleware"
+	accounts "local/auth-svc/services"
+	"local/auth-svc/sqldb"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +35,7 @@ func NewRedisDB(host, port, password string) *redis.Client {
 }
 
 func main() {
-
+	sqldb.InitializeDatabase()
 	appAddr := ":" + os.Getenv("PORT")
 
 	//redis details
@@ -59,7 +62,11 @@ func main() {
 	router.POST("/api/v1/login", service.SendLoginCookie)
 	router.POST("/api/v1/logout", service.LogoutSession)
 	router.POST("/api/v1/refresh", service.RefreshSession)
-
+	router.POST("/api/v1/account/new", middleware.TokenAuthMiddleware(), accounts.AddAccount)
+	router.POST("/api/v1/account/update", middleware.TokenAuthMiddleware(), accounts.ModifyAccount)
+	router.POST("/api/v1/account/remove", middleware.TokenAuthMiddleware(), accounts.RemoveAccount)
+	router.POST("/api/v1/account/list", middleware.TokenAuthMiddleware(), accounts.ListAccounts)
+	router.POST("/api/v1/account/find", middleware.TokenAuthMiddleware(), accounts.FindUser)
 	srv := &http.Server{
 		Addr:    appAddr,
 		Handler: router,
