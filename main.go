@@ -63,12 +63,12 @@ func main() {
 	var rd = auth.NewAuth(redisClient)
 	var tk = auth.NewToken()
 	var service = handlers.NewProfile(rd, tk)
-
+	allowedHost := os.Getenv("ALLOWED")
 	var router = gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowOrigins:     []string{allowedHost},
 		AllowMethods:     []string{"POST", "HEAD", "OPTIONS", "GET", "PUT"},
-		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Origin", "Accept", "X-Requested-With", "Content-Type", "Authorization", "Access-Control-Request-Method", "Access-Control-Request-Headers"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Accept", "X-Requested-With", "Content-Type", "Authorization", "Access-Control-Request-Method", "Access-Control-Request-Headers"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
