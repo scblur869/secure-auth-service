@@ -33,8 +33,8 @@ var user = User{
 	Username:    "tsadmin",
 	Password:    "tsadmin",
 	Email:       "admin@temper-sure.com",
-	DisplayName: "Temper-Sure Admin",
-	Role:        "admin",
+	DisplayName: "Temper-Sure",
+	Role:        "user-role",
 }
 
 func resolveClaims(tokenString string) map[string]interface{} {
