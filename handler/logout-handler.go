@@ -47,6 +47,7 @@ func (h *profileHandler) LogoutSession(c *gin.Context) {
 			return
 		}
 	}
+	c.SetSameSite(http.SameSiteNoneMode)
 	c.SetCookie("ts-cookie", "stale", -1, "", "", false, true)
 	c.SetCookie("is-logged-in", "stale", -1, "", "", false, false)
 	c.JSON(http.StatusOK, "Successfully logged out")
