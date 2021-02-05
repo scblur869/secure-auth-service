@@ -49,7 +49,7 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 	}
 
 	encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
-	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("ts-cookie", encCookie, 108000, "", "", false, true)
 	c.SetCookie("is-logged-in", string(jsonStr), 1800, "", "", false, false)
 	c.JSON(http.StatusOK, "successful")
