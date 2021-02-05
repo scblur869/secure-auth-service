@@ -46,7 +46,6 @@ func InitializeDatabase() {
 func QueryByParam(database *sql.DB, query string, param string) (handler.User, error) {
 
 	var rowData handler.User
-	rows, err := database.Query(query, param)
 	var id int
 	var username string
 	var display_name string
@@ -54,24 +53,22 @@ func QueryByParam(database *sql.DB, query string, param string) (handler.User, e
 	var role string
 	var password string
 
+	err := database.QueryRow(query, param).Scan(&id, &username, &display_name, &email, &role, &password)
 	if err != nil {
-		fmt.Println(err)
-	}
-	for rows.Next() {
-		err = rows.Scan(&id, &username, &display_name, &email, &role, &password)
-		if err != nil {
-			fmt.Println(err)
+		if err == sql.ErrNoRows {
+			return rowData, err
+		} else {
+			log.Fatal(err)
 		}
-
-		rowData.ID = id
-		rowData.Username = username
-		rowData.DisplayName = display_name
-		rowData.Email = email
-		rowData.Role = role
-		rowData.Password = password
-
 	}
-	rows.Close()
+
+	rowData.ID = id
+	rowData.Username = username
+	rowData.DisplayName = display_name
+	rowData.Email = email
+	rowData.Role = role
+	rowData.Password = password
+
 	database.Close()
 	return rowData, err
 }

@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	crypt "local/auth-svc/_cipher"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +41,8 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	c.SetCookie("ts-cookie", string(jsonString), 108000, "", "", false, true)
-	c.JSON(http.StatusOK, ts.AccessToken)
+	claims := resolveClaims(ts.AccessToken)
+	encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
+	c.SetCookie("ts-cookie", encCookie, 108000, "", "", false, true)
+	c.JSON(http.StatusOK, claims)
 }

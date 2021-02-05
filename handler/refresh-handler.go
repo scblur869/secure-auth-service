@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	crypt "local/auth-svc/_cipher"
 	"net/http"
 	"os"
 
@@ -13,9 +14,15 @@ import (
 // token refresh function
 func (h *profileHandler) RefreshSession(c *gin.Context) {
 	mapToken := map[string]string{}
-	ck, ckErr := c.Cookie("ts-cookie")
+	cookie, ckErr := c.Cookie("ts-cookie")
 	if ckErr != nil {
 		fmt.Println(ckErr)
+		c.JSON(http.StatusBadRequest, "data requirement not met")
+		return
+	}
+	ck, err := crypt.Decrypt(string(cookie), os.Getenv("AESKEY"))
+	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, "data requirement not met")
 		return
 	}
@@ -87,8 +94,10 @@ func (h *profileHandler) RefreshSession(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, err.Error())
 			return
 		}
-		c.SetCookie("ts-cookie", string(jsonString), 108000, "", "", false, true)
-		c.JSON(http.StatusCreated, ts.AccessToken)
+		claims := resolveClaims(ts.AccessToken)
+		encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
+		c.SetCookie("ts-cookie", encCookie, 108000, "", "", false, true)
+		c.JSON(http.StatusCreated, claims)
 	} else {
 		c.JSON(http.StatusUnauthorized, "refresh expired")
 	}

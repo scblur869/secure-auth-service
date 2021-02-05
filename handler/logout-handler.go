@@ -3,8 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	crypt "local/auth-svc/_cipher"
 	"local/auth-svc/auth"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,12 +14,19 @@ import (
 // logout function
 func (h *profileHandler) LogoutSession(c *gin.Context) {
 	mapToken := map[string]string{}
-	ck, ckErr := c.Cookie("ts-cookie")
+	cookie, ckErr := c.Cookie("ts-cookie")
 	if ckErr != nil {
 		fmt.Println(ckErr)
 		c.JSON(http.StatusBadRequest, "data requirement not met")
 		return
 	}
+	ck, err := crypt.Decrypt(string(cookie), os.Getenv("AESKEY"))
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, "data requirement not met")
+		return
+	}
+
 	if err := json.Unmarshal([]byte(ck), &mapToken); err != nil {
 		fmt.Println(err)
 	}

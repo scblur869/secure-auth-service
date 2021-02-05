@@ -1,7 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"local/auth-svc/auth"
+	"os"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // ProfileHandler struct
@@ -31,4 +35,19 @@ var user = User{
 	Email:       "admin@temper-sure.com",
 	DisplayName: "Temper-Sure Admin",
 	Role:        "admin",
+}
+
+func resolveClaims(tokenString string) map[string]interface{} {
+	c := make(map[string]interface{})
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("ACCESS_SECRET")), nil
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c["display_name"] = claims["display_name"]
+	c["role"] = claims["role"]
+	return c
 }

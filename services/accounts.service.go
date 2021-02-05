@@ -68,7 +68,8 @@ func FindUser(c *gin.Context) {
 	}
 	user, err := sqldb.FindUserByUserName(account)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusNoContent, err)
+
 		return
 	}
 	c.JSON(http.StatusOK, user)

@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"local/auth-svc/auth"
 	handlers "local/auth-svc/handler"
 	"local/auth-svc/middleware"
@@ -25,6 +28,17 @@ func init() {
 	}
 }
 
+func setEncryptionKeyEnv() {
+	bytes := make([]byte, 32) //generate a random 32 byte key for AES-256
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err.Error())
+	}
+
+	key := hex.EncodeToString(bytes) //encode key in bytes to string
+	os.Setenv("AESKEY", key)
+	fmt.Println("key :", os.Getenv("AESKEY"))
+}
+
 func NewRedisDB(host, port, password string) *redis.Client {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     host + ":" + port,
@@ -35,6 +49,7 @@ func NewRedisDB(host, port, password string) *redis.Client {
 }
 
 func main() {
+	setEncryptionKeyEnv()
 	sqldb.InitializeDatabase()
 	appAddr := ":" + os.Getenv("PORT")
 
