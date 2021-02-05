@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	crypt "local/auth-svc/_cipher"
 	"net/http"
 	"os"
@@ -42,7 +43,13 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 		return
 	}
 	claims := resolveClaims(ts.AccessToken)
+	jsonStr, err := json.Marshal(claims)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
 	c.SetCookie("ts-cookie", encCookie, 108000, "", "", false, true)
-	c.JSON(http.StatusOK, claims)
+	c.SetCookie("is-logged-in", string(jsonStr), 1800, "", "", false, false)
+	c.JSON(http.StatusOK, "successful")
 }

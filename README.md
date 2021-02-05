@@ -27,21 +27,32 @@ POST   /api/v1/account/find      --> local/auth-svc/services.FindUser (5 handler
   - /api/v1/login
 
 ```json
-   POST
-     {
-      username: "someUser",
-      password: "somePassword"
-     }
-     COOKIE {ENCRYPTED HTTP-Only cookie}
-     RESPONSE {JWT Only} 10 min expiration
-     
+POST
+  {
+    username: "someUser",
+    password: "somePassword"
+  }
+    200 RESPONSE 
+      COOKIE {ENCRYPTED HTTP-Only cookie}
+      JSON
+        {
+          "display_name": "John D Smith",
+          "role": "admin"
+        }  
 ```
 
 - Refresh
   - /api/v1/refresh
 
-```console
-  POST {HTTP-Only cookie from login (ENCRYPTED)}
+```json
+ POST COOKIE {ENCRYPTED HTTP-Only cookie}
+ 200 RESPONSE
+     COOKIE {ENCRYPTED HTTP-Only cookie}
+     JSON 
+       {
+        "display_name": "John D Smith",
+        "role": "admin"
+       }
 ```
 
 - Logout
@@ -118,8 +129,8 @@ POST   /api/v1/account/find      --> local/auth-svc/services.FindUser (5 handler
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 REDIS_PASSWORD=
-ACCESS_SECRET=9ti4gj2dgfddrad3llr9
-REFRESH_SECRET=37fh79fjw955wdt321a9
+ACCESS_SECRET=1234567890abcdefghij
+REFRESH_SECRET=9876543210abcdefghij
 PORT=4000
 ```
 
@@ -149,8 +160,8 @@ WORKDIR /go/src/app
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379
 ENV REDIS_PASSWORD=
-ENV ACCESS_SECRET=9ti4gj2dgfddrad3llr9
-ENV REFRESH_SECRET=37fh79fjw955wdt321a9
+ENV ACCESS_SECRET=1234567890abcdefghij
+ENV REFRESH_SECRET=9876543210abcdefghij
 ENV PORT=4000
 ENV GIN_MODE=release
 COPY auth-svc .
@@ -162,3 +173,10 @@ CMD ["./auth-svc"]
 
 - Simple UI for managing accounts
 - Since when you start the container / service, it will gen a new encryption key. it may be better for production deployments that scale to externalize this
+
+## BUILDING / DEPLOYING
+
+```console
+go build -o my-auth-service -ldflags "-s -w" 
+./my-auth-service
+```

@@ -49,7 +49,7 @@ func NewRedisDB(host, port, password string) *redis.Client {
 }
 
 func main() {
-	setEncryptionKeyEnv()
+	// setEncryptionKeyEnv()
 	sqldb.InitializeDatabase()
 	appAddr := ":" + os.Getenv("PORT")
 

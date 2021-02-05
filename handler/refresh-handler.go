@@ -14,6 +14,7 @@ import (
 // token refresh function
 func (h *profileHandler) RefreshSession(c *gin.Context) {
 	mapToken := map[string]string{}
+
 	cookie, ckErr := c.Cookie("ts-cookie")
 	if ckErr != nil {
 		fmt.Println(ckErr)
@@ -95,9 +96,15 @@ func (h *profileHandler) RefreshSession(c *gin.Context) {
 			return
 		}
 		claims := resolveClaims(ts.AccessToken)
+		jsonStr, err := json.Marshal(claims)
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
 		c.SetCookie("ts-cookie", encCookie, 108000, "", "", false, true)
-		c.JSON(http.StatusCreated, claims)
+		c.SetCookie("is-logged-in", string(jsonStr), 1800, "", "", false, false)
+		c.JSON(http.StatusCreated, "successful")
 	} else {
 		c.JSON(http.StatusUnauthorized, "refresh expired")
 	}
