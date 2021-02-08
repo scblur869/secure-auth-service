@@ -27,7 +27,7 @@ type User struct {
 	Role        string `json:"role"`
 }
 
-//In memory user
+// The only in-memory user
 var user = User{
 	ID:          1,
 	Username:    "tsadmin",
