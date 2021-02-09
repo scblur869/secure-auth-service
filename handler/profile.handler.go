@@ -1,5 +1,6 @@
 package handler
 
+// inspired by https://github.com/victorsteven/jwt-best-practices
 import (
 	"fmt"
 	"local/auth-svc/auth"

@@ -180,3 +180,6 @@ CMD ["./auth-svc"]
 go build -o my-auth-service -ldflags "-s -w" 
 ./my-auth-service
 ```
+## REFERENCES and CODE INSPIRATION
+- https://github.com/victorsteven/jwt-best-practices
+-  https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/
