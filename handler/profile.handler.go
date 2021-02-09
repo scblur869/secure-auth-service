@@ -30,11 +30,16 @@ type User struct {
 // The only in-memory user
 var user = User{
 	ID:          1,
-	Username:    "tsadmin",
-	Password:    "tsadmin",
-	Email:       "tsadmin@test.com",
-	DisplayName: "Demo Account",
-	Role:        "user-role",
+	Username:    "demo",
+	Password:    "demo",
+	Email:       "demo@test.com",
+	DisplayName: "Demo User",
+	Role:        "Demo",
+}
+
+type Claims struct {
+	DisplayName string `json:"display_name"`
+	Role        string `json:"role"`
 }
 
 func resolveClaims(tokenString string) map[string]interface{} {

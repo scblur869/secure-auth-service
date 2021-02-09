@@ -1,0 +1,21 @@
+version: '3.1'
+services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+  auth-svc:
+    image: auth-svc
+    restart: always
+    ports:
+      - 4000:4000
+    volumes:
+      - "~/data/sqldb:/go/src/app/data/db"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    depends_on:
+      - "redis"
