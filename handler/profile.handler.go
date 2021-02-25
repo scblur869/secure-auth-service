@@ -4,6 +4,7 @@ package handler
 import (
 	"fmt"
 	"local/auth-svc/auth"
+	"local/auth-svc/model"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
@@ -19,17 +20,15 @@ func NewProfile(rd auth.AuthInterface, tk auth.TokenInterface) *profileHandler {
 	return &profileHandler{rd, tk}
 }
 
-type User struct {
-	ID          int    `json:"id"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	Email       string `json:"email"`
-	DisplayName string `json:"displayname"`
-	Role        string `json:"role"`
+var role = model.Role{
+	ID:          1,
+	Name:        "Admin",
+	DisplayName: "Admin User Role",
+	Description: "Overall Admin Account Role",
 }
 
 // The only in-memory user
-var user = User{
+var user = model.User{
 	ID:          1,
 	Username:    "demo",
 	Password:    "demo",

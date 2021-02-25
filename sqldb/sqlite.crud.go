@@ -2,21 +2,10 @@ package sqldb
 
 import (
 	"fmt"
-	"local/auth-svc/handler"
+	"local/auth-svc/model"
 )
 
-func FindUserByUserName(user handler.User) (handler.User, error) {
-	database := SQLConnect()
-
-	query := "SELECT id, username,display_name,email,role,password FROM accounts WHERE username = ?"
-	user, err := QueryByParam(database, query, user.Username)
-	if err != nil {
-		fmt.Print(err)
-	}
-	return user, err
-}
-
-func UpdateUser(user handler.User) (handler.User, error) {
+func UpdateUser(user model.User) (model.User, error) {
 	database := SQLConnect()
 
 	err := UpdateAccountInfo(database, user)
@@ -26,7 +15,7 @@ func UpdateUser(user handler.User) (handler.User, error) {
 	return user, err
 }
 
-func DeleteUser(user handler.User) error {
+func DeleteUser(user model.User) error {
 	database := SQLConnect()
 
 	err := DeleteAccount(database, user)
@@ -36,7 +25,7 @@ func DeleteUser(user handler.User) error {
 	return err
 }
 
-func ListAllAccounts() ([]handler.User, error) {
+func ListAllAccounts() ([]model.User, error) {
 	database := SQLConnect()
 
 	users, err := GetAllAccounts(database)
@@ -46,7 +35,7 @@ func ListAllAccounts() ([]handler.User, error) {
 	return users, err
 }
 
-func AddNewAccount(user handler.User) (handler.User, error) {
+func AddNewAccount(user model.User) (model.User, error) {
 	database := SQLConnect()
 
 	err := AddAccountInfo(database, user)
@@ -54,4 +43,44 @@ func AddNewAccount(user handler.User) (handler.User, error) {
 		fmt.Print(err)
 	}
 	return user, err
+}
+
+func AddNewRole(role model.Role) (model.Role, error) {
+	database := SQLConnect()
+
+	err := AddRole(database, role)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return role, err
+}
+
+func ListAllRoles() ([]model.Role, error) {
+	database := SQLConnect()
+
+	roles, err := GetAllRoles(database)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return roles, err
+}
+
+func DeleteRole(role model.Role) error {
+	database := SQLConnect()
+
+	err := RemoveRole(database, role)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return err
+}
+
+func UpdateRole(role model.Role) (model.Role, error) {
+	database := SQLConnect()
+
+	err := UpdateCurrentRole(database, role)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return role, err
 }

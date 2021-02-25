@@ -14,7 +14,7 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - "~/data/sqldb:/go/src/app/data/db"
+      - "./data/db:/app/data/db"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     depends_on:

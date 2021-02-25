@@ -2,6 +2,7 @@ package service
 
 import (
 	"local/auth-svc/handler"
+	"local/auth-svc/model"
 	"local/auth-svc/sqldb"
 	"net/http"
 
@@ -19,7 +20,7 @@ func ListAccounts(c *gin.Context) {
 
 func AddAccount(c *gin.Context) {
 
-	var account handler.User
+	var account model.User
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
@@ -33,7 +34,7 @@ func AddAccount(c *gin.Context) {
 }
 
 func ModifyAccount(c *gin.Context) {
-	var account handler.User
+	var account model.User
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
@@ -47,7 +48,7 @@ func ModifyAccount(c *gin.Context) {
 }
 
 func RemoveAccount(c *gin.Context) {
-	var account handler.User
+	var account model.User
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
@@ -61,12 +62,12 @@ func RemoveAccount(c *gin.Context) {
 }
 
 func FindUser(c *gin.Context) {
-	var account handler.User
+	var account model.User
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
 	}
-	user, err := sqldb.FindUserByUserName(account)
+	user, err := handler.FindUserByUserName(account)
 	if err != nil {
 		c.JSON(http.StatusNoContent, err)
 

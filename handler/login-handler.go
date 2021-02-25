@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	crypt "local/auth-svc/_cipher"
+	"local/auth-svc/model"
+	sql "local/auth-svc/sqldb"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,14 +13,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func FindUserByUserName(user model.User) (model.User, error) {
+	database := sql.SQLConnect()
+
+	query := "SELECT id, username,display_name,email,role,password FROM accounts WHERE username = ?"
+	user, err := sql.QueryByParam(database, query, user.Username)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return user, err
+}
+
 func (h *profileHandler) SendLoginCookie(c *gin.Context) {
-	var u User
+	var u model.User
 	strconv.Itoa(user.ID)
 	if err := c.ShouldBindJSON(&u); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
 		return
 	}
-	//compare the user from the request, with the one we defined:
+	user, err := FindUserByUserName(u)
 	if user.Username != u.Username || user.Password != u.Password {
 		c.JSON(http.StatusUnauthorized, "Please provide valid login details")
 		return

@@ -3,7 +3,7 @@ package sqldb
 import (
 	"database/sql"
 	"fmt"
-	"local/auth-svc/handler"
+	"local/auth-svc/model"
 	"log"
 	"os"
 
@@ -38,14 +38,28 @@ func InitializeDatabase() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	statement.Exec()
+	acct, err := statement.Exec()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(acct.RowsAffected())
 
+	roleStmt, err :=
+		database.Prepare("CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, display_name TEXT, description TEXT, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	rol, err := roleStmt.Exec()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(rol.RowsAffected())
 	database.Close()
 }
 
-func QueryByParam(database *sql.DB, query string, param string) (handler.User, error) {
+func QueryByParam(database *sql.DB, query string, param string) (model.User, error) {
 
-	var rowData handler.User
+	var rowData model.User
 	var id int
 	var username string
 	var display_name string
@@ -73,7 +87,7 @@ func QueryByParam(database *sql.DB, query string, param string) (handler.User, e
 	return rowData, err
 }
 
-func UpdateAccountInfo(db *sql.DB, user handler.User) error {
+func UpdateAccountInfo(db *sql.DB, user model.User) error {
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
@@ -96,7 +110,7 @@ func UpdateAccountInfo(db *sql.DB, user handler.User) error {
 	return err
 }
 
-func DeleteAccount(db *sql.DB, user handler.User) error {
+func DeleteAccount(db *sql.DB, user model.User) error {
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
@@ -122,7 +136,7 @@ func DeleteAccount(db *sql.DB, user handler.User) error {
 	return err
 }
 
-func AddAccountInfo(db *sql.DB, user handler.User) error {
+func AddAccountInfo(db *sql.DB, user model.User) error {
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
@@ -145,10 +159,10 @@ func AddAccountInfo(db *sql.DB, user handler.User) error {
 	return err
 }
 
-func GetAllAccounts(database *sql.DB) ([]handler.User, error) {
+func GetAllAccounts(database *sql.DB) ([]model.User, error) {
 
-	var rowData handler.User
-	var results []handler.User
+	var rowData model.User
+	var results []model.User
 	query := "SELECT id, username, display_name, email, role FROM accounts"
 	rows, err := database.Query(query)
 	var id int
