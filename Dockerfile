@@ -6,6 +6,7 @@ RUN cd /src && go build -o auth-svc
 # final stage
 FROM alpine
 WORKDIR /app
+ENV ADMIN_PASS=admin
 ENV REDIS_HOST=redis
 ENV REDIS_PORT=6379
 ENV REDIS_PASSWORD=

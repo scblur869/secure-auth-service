@@ -33,6 +33,8 @@ func InitializeDatabase() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// creates the accounts table
 	statement, err :=
 		database.Prepare("CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, display_name TEXT, email TEXT, role TEXT, password TEXT, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
@@ -44,6 +46,19 @@ func InitializeDatabase() {
 	}
 	fmt.Println(acct.RowsAffected())
 
+	//creates the initial admin user
+	insert, err :=
+		database.Prepare("INSERT OR IGNORE INTO accounts (username, display_name, email, role, password) VALUES(?,?,?,?,?)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	ins, err := insert.Exec("admin", "IDP admin user account", "admin@local", "admin role", os.Getenv("ADMIN_PASS"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(ins.RowsAffected())
+	fmt.Println("admin account created")
+	//creates the roles table
 	roleStmt, err :=
 		database.Prepare("CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, display_name TEXT, description TEXT, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
@@ -54,6 +69,29 @@ func InitializeDatabase() {
 		fmt.Println(err)
 	}
 	fmt.Println(rol.RowsAffected())
+
+	role_ins, err :=
+		database.Prepare("INSERT OR IGNORE INTO roles (name, display_name, description) VALUES(?,?,?)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	role_res, err := role_ins.Exec("admin", "Admin Role", "IDP Admin Role")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(role_res.RowsAffected())
+
+	grole_ins, err :=
+		database.Prepare("INSERT OR IGNORE INTO roles (name, display_name, description) VALUES(?,?,?)")
+	if err != nil {
+		fmt.Println(err)
+	}
+	grole_res, err := grole_ins.Exec("guest", "Guest Role", "IDP Guest Role")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(grole_res.RowsAffected())
+
 	database.Close()
 }
 
