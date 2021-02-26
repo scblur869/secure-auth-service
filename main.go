@@ -82,6 +82,8 @@ func main() {
 	router.POST("/api/v1/account/remove", middleware.TokenAuthMiddleware(), accounts.RemoveAccount)
 	router.POST("/api/v1/account/list", middleware.TokenAuthMiddleware(), accounts.ListAccounts)
 	router.POST("/api/v1/account/find", middleware.TokenAuthMiddleware(), accounts.FindUser)
+	router.POST("/api/v1/account/toggle", middleware.TokenAuthMiddleware(), accounts.ToggleAccount)
+	router.POST("/api/v1/account/set", middleware.TokenAuthMiddleware(), accounts.SetPassword)
 	router.POST("/api/v1/role/new", middleware.TokenAuthMiddleware(), accounts.AddRole)
 	router.POST("/api/v1/role/update", middleware.TokenAuthMiddleware(), accounts.ModifyRole)
 	router.POST("/api/v1/role/remove", middleware.TokenAuthMiddleware(), accounts.RemoveRole)

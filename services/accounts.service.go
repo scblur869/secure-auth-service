@@ -47,6 +47,34 @@ func ModifyAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func ToggleAccount(c *gin.Context) {
+	var account model.User
+	if err := c.ShouldBindJSON(&account); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
+		return
+	}
+	user, err := sqldb.SetAccountState(account)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func SetPassword(c *gin.Context) {
+	var account model.User
+	if err := c.ShouldBindJSON(&account); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
+		return
+	}
+	user, err := sqldb.UpdateAccountPassword(account)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func RemoveAccount(c *gin.Context) {
 	var account model.User
 	if err := c.ShouldBindJSON(&account); err != nil {

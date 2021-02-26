@@ -16,7 +16,7 @@ import (
 func FindUserByUserName(user model.User) (model.User, error) {
 	database := sql.SQLConnect()
 
-	query := "SELECT id, username,display_name,email,role,password FROM accounts WHERE username = ?"
+	query := "SELECT id, username, display_name, email, role, is_enabled, password FROM accounts WHERE username = ?"
 	user, err := sql.QueryByParam(database, query, user.Username)
 	if err != nil {
 		fmt.Print(err)

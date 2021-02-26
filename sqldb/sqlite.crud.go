@@ -15,6 +15,26 @@ func UpdateUser(user model.User) (model.User, error) {
 	return user, err
 }
 
+func SetAccountState(user model.User) (model.User, error) {
+	database := SQLConnect()
+
+	err := toggleAccountStatus(database, user)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return user, err
+}
+
+func UpdateAccountPassword(user model.User) (model.User, error) {
+	database := SQLConnect()
+
+	err := UpdatePassword(database, user)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return user, err
+}
+
 func DeleteUser(user model.User) error {
 	database := SQLConnect()
 

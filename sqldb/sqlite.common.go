@@ -36,7 +36,7 @@ func InitializeDatabase() {
 
 	// creates the accounts table
 	statement, err :=
-		database.Prepare("CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, display_name TEXT, email TEXT, role TEXT, is_enabled BOOLEAN, password TEXT, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+		database.Prepare("CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR UNIQUE NOT NULL, display_name TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL, is_enabled INTEGER DEFAULT 0, password TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -60,7 +60,7 @@ func InitializeDatabase() {
 	fmt.Println("admin account created")
 	//creates the roles table
 	roleStmt, err :=
-		database.Prepare("CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, display_name TEXT, description TEXT, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+		database.Prepare("CREATE TABLE IF NOT EXISTS roles (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR UNIQUE NOT NULL, display_name TEXT NOT NULL, description TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -96,7 +96,6 @@ func InitializeDatabase() {
 }
 
 func QueryByParam(database *sql.DB, query string, param string) (model.User, error) {
-
 	var rowData model.User
 	var id int
 	var username string
@@ -105,13 +104,12 @@ func QueryByParam(database *sql.DB, query string, param string) (model.User, err
 	var role string
 	var is_enabled int // 0 = false / 1 = true
 	var password string
-
 	err := database.QueryRow(query, param).Scan(&id, &username, &display_name, &email, &role, &is_enabled, &password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return rowData, err
 		} else {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 	}
 
@@ -223,20 +221,21 @@ func DeleteAccount(db *sql.DB, user model.User) error {
 }
 
 func AddAccountInfo(db *sql.DB, user model.User) error {
-	user.IsEnabled = 0 //accounts are disabled by default
+	user.IsEnabled = 0         //accounts are disabled by default
+	user.Password = "password" //default password
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer tx.Rollback()
 
-	stmt, err := db.Prepare("INSERT INTO accounts(username,display_name,email,role,is_enabled) VALUES(?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO accounts(username,display_name,email,role,is_enabled,password) VALUES(?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.IsEnabled); err != nil {
+	if _, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.IsEnabled, user.Password); err != nil {
 		fmt.Println(err)
 	}
 	if err := tx.Commit(); err != nil {
@@ -250,7 +249,7 @@ func GetAllAccounts(database *sql.DB) ([]model.User, error) {
 
 	var rowData model.User
 	var results []model.User
-	query := "SELECT id, username, display_name, email, role, is_enabled FROM accounts"
+	query := "SELECT id, username, display_name, email, role, is_enabled, password FROM accounts"
 	rows, err := database.Query(query)
 	var id int
 	var username string
@@ -258,12 +257,13 @@ func GetAllAccounts(database *sql.DB) ([]model.User, error) {
 	var email string
 	var role string
 	var is_enabled int
-
+	var password string
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	for rows.Next() {
-		err = rows.Scan(&id, &username, &display_name, &email, &role, &is_enabled)
+		err = rows.Scan(&id, &username, &display_name, &email, &role, &is_enabled, &password)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -274,6 +274,7 @@ func GetAllAccounts(database *sql.DB) ([]model.User, error) {
 		rowData.Email = email
 		rowData.Role = role
 		rowData.IsEnabled = is_enabled
+		rowData.Password = password
 		results = append(results, rowData)
 
 	}
