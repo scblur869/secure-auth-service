@@ -52,7 +52,7 @@ func InitializeDatabase() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	ins, err := insert.Exec("admin", "IDP admin user account", "admin@local", "admin role", 1, os.Getenv("ADMIN_PASS"))
+	ins, err := insert.Exec("admin", "IDP admin user account", "admin@local", "admin", 1, os.Getenv("ADMIN_PASS"))
 	if err != nil {
 		fmt.Println(err)
 	}

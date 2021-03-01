@@ -1,7 +1,17 @@
 version: '3.1'
 services:
+  idp:
+    image: ynhidp
+    container_name: idp_ui
+    restart: always
+    ports:
+      - 8888:8888
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
   redis:
     image: redis
+    container_name: reddis_cache
     restart: always
     ports:
       - 6379:6379
@@ -10,6 +20,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
   auth-svc:
     image: auth-svc
+    container_name: idp_svc
     restart: always
     ports:
       - 4000:4000

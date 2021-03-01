@@ -1,26 +1,34 @@
-# Token (Signed JWT) Authorization Service
+# Authentication &  Authorization Service
 
 ## Description
 
-Authentication Service written in GO 1.15.x that supports 384Bit signed JWT for login , token refresh and logout use cases.
+Authentication and Role handling Service written in GO 1.15.x that supports 384Bit signed JWT for login , token refresh and logout use cases.
 Login and Refresh endpoints sets an http-only AES encrypted cookie with the jwt and refresh token and returns the JWT (10 min expiration) to the client.
-The http-only encrypted cookie expires after 48 hours.
+The http-only encrypted cookie expires after 48 hours. A second NON http-only non encrtpyed cookie is sent with displayname and role to be consumed by a front end application. This cookie is not usable for authentication or accessing endpoints. This service also provides endpoints for managing application roles that could be assigned to accounts. Toggling of account status and setting passwords are also supported.
 
 ## Primary Use Case
 
-  Token based (signed JWT), secure authentication support for web applications
+### Token based (signed JWT), secure authentication support for web applications
+
+### All endpoints account and role endpoints require a token
 
 ## Provides
 
 ```console
-POST   /api/v1/login             --> local/auth-svc/handler.(*profileHandler).SendLoginCookie-fm (4 handlers)
-POST   /api/v1/logout            --> local/auth-svc/handler.(*profileHandler).LogoutSession-fm (4 handlers)
-POST   /api/v1/refresh           --> local/auth-svc/handler.(*profileHandler).RefreshSession-fm (4 handlers)
-POST   /api/v1/account/new       --> local/auth-svc/services.AddAccount (5 handlers)
-POST   /api/v1/account/update    --> local/auth-svc/services.ModifyAccount (5 handlers)
-POST   /api/v1/account/remove    --> local/auth-svc/services.RemoveAccount (5 handlers)
-POST   /api/v1/account/list      --> local/auth-svc/services.ListAccounts (5 handlers)
-POST   /api/v1/account/find      --> local/auth-svc/services.FindUser (5 handlers)
+POST   /api/v1/login             --> create auth token
+POST   /api/v1/logout            --> expire auth token
+POST   /api/v1/refresh           --> refresh auth token
+POST   /api/v1/account/new       --> create new account
+POST   /api/v1/account/update    --> update account
+POST   /api/v1/account/remove    --> remove account
+POST   /api/v1/account/list      --> list all accounts
+POST   /api/v1/account/find      --> find account
+POST   /api/v1/account/toggle    --> toggle account status (active : inactive )
+POST   /api/v1/account/set       --> set password for account
+POST   /api/v1/role/new          --> create a new role
+POST   /api/v1/role/update       --> update role
+POST   /api/v1/role/remove       --> remove role
+POST   /api/v1/role/list         --> list current roles
 ```
 
 - Login
@@ -34,11 +42,9 @@ POST
   }
     200 RESPONSE 
       COOKIE {ENCRYPTED HTTP-Only cookie}
-      JSON
-        {
-          "display_name": "John D Smith",
-          "role": "admin"
-        }  
+      COOKIE {display_name, role}
+    TEXT 
+      "successful"
 ```
 
 - Refresh
@@ -48,11 +54,9 @@ POST
  POST COOKIE {ENCRYPTED HTTP-Only cookie}
  200 RESPONSE
      COOKIE {ENCRYPTED HTTP-Only cookie}
-     JSON 
-       {
-        "display_name": "John D Smith",
-        "role": "admin"
-       }
+     COOKIE {display_name, role}
+     TEXT 
+      "successful"
 ```
 
 - Logout
@@ -85,18 +89,41 @@ POST
 - /api/v1/accounts/update
 - /api/v1/accounts/find
 - /api/v1/accounts/remove
+- /api/v1/accounts/toggle
+- /api/v1/accounts/set
 
 ```console
   POST
   {   
     "id": 3,
     "username": "testuser",
-    "password": "",
+    "password": "somesecret",
     "email": "test.user@testingcompany.com",
     "displayname": "test s. user",
     "role": "report-user"
   }
 ```
+
+## Role Management Endpoints
+
+### list, update, new, remove role
+
+- /api/v1/role/new
+- /api/v1/role/update
+- /api/v1/role/remove
+- /api/v1/role/list
+
+```console
+  POST
+  {   
+    "id": 3,
+    "name": "default-user",
+    "displayname": "Default User Role",
+    "description": "Default user Role for application"
+  }
+```
+
+## Token & Claims
 
 - example login / refresh token
 
@@ -180,6 +207,8 @@ CMD ["./auth-svc"]
 go build -o my-auth-service -ldflags "-s -w" 
 ./my-auth-service
 ```
+
 ## REFERENCES and CODE INSPIRATION
-- https://github.com/victorsteven/jwt-best-practices
--  https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/
+
+- <https://github.com/victorsteven/jwt-best-practices>
+- <https://www.melvinvivas.com/how-to-encrypt-and-decrypt-data-using-aes/>
