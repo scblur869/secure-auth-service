@@ -208,6 +208,9 @@ go build -o my-auth-service -ldflags "-s -w"
 ./my-auth-service
 ```
 
+## DOCKER
+- and Dockerfile and a docker-compose script have been provided for testing the auth_svc and the ui also in the repo
+
 ## REFERENCES and CODE INSPIRATION
 
 - <https://github.com/victorsteven/jwt-best-practices>
