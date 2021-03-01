@@ -209,6 +209,7 @@ go build -o my-auth-service -ldflags "-s -w"
 ```
 
 ## DOCKER
+
 - and Dockerfile and a docker-compose script have been provided for testing the auth_svc and the ui also in the repo
 
 ## REFERENCES and CODE INSPIRATION
