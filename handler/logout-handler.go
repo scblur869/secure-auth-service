@@ -48,7 +48,9 @@ func (h *profileHandler) LogoutSession(c *gin.Context) {
 		}
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("ts-cookie", "stale", -1, "", "", false, true)
-	c.SetCookie("is-logged-in", "stale", -1, "", "", false, false)
+
+	domain := os.Getenv("COOKIE_DOMAIN")
+	c.SetCookie("ts-cookie", "stale", -1, "", domain, true, true)
+	c.SetCookie("is-logged-in", "stale", -1, "", domain, false, false)
 	c.JSON(http.StatusOK, "Successfully logged out")
 }

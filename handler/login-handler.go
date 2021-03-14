@@ -60,10 +60,10 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	domain := os.Getenv("COOKIE_DOMAIN")
 	encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("ts-cookie", encCookie, 108000, "", "", true, true)
-	c.SetCookie("is-logged-in", string(jsonStr), 1800, "", "", false, false)
+	c.SetCookie("ts-cookie", encCookie, 108000, "", domain, true, true)
+	c.SetCookie("is-logged-in", string(jsonStr), 1800, "", domain, false, false)
 	c.JSON(http.StatusOK, "successful")
 }
