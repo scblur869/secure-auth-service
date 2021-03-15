@@ -64,9 +64,10 @@ func main() {
 	var tk = auth.NewToken()
 	var service = handlers.NewProfile(rd, tk)
 	allowedHost := os.Getenv("ALLOWED")
+	idp_ui := os.Getenv("IDP_UI")
 	var router = gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{allowedHost, allowedHost + ":8888", "http://localhost:4200"},
+		AllowOrigins:     []string{allowedHost, idp_ui, "http://localhost:4200"},
 		AllowMethods:     []string{"POST", "HEAD", "OPTIONS", "GET", "PUT"},
 		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Accept", "X-Requested-With", "Content-Type", "Authorization", "Access-Control-Request-Method", "Access-Control-Request-Headers"},
 		ExposeHeaders:    []string{"Content-Length"},
