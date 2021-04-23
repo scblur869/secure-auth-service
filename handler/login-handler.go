@@ -32,6 +32,9 @@ func (h *profileHandler) SendLoginCookie(c *gin.Context) {
 		return
 	}
 	user, err := FindUserByUserName(u)
+	if err != nil {
+		fmt.Print(err)
+	}
 	if user.Username != u.Username || user.Password != u.Password {
 		c.JSON(http.StatusUnauthorized, "Please provide valid login details")
 		return
