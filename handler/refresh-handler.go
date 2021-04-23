@@ -6,6 +6,7 @@ import (
 	crypt "local/auth-svc/_cipher"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -102,9 +103,13 @@ func (h *profileHandler) RefreshSession(c *gin.Context) {
 		}
 
 		domain := os.Getenv("COOKIE_DOMAIN")
+		secure, err := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+		if err != nil {
+			fmt.Println(err)
+		}
 		encCookie := crypt.Encrypt(string(jsonString), os.Getenv("AESKEY"))
 		c.SetSameSite(http.SameSiteLaxMode)
-		c.SetCookie("ts-cookie", encCookie, 108000, "", domain, true, true)
+		c.SetCookie("ts-cookie", encCookie, 108000, "", domain, secure, true)
 		c.SetCookie("is-logged-in", string(jsonStr), 1800, "", domain, false, false)
 		c.JSON(http.StatusCreated, "successful")
 	} else {

@@ -7,6 +7,7 @@ import (
 	"local/auth-svc/auth"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,7 +51,11 @@ func (h *profileHandler) LogoutSession(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 
 	domain := os.Getenv("COOKIE_DOMAIN")
-	c.SetCookie("ts-cookie", "stale", -1, "", domain, true, true)
+	secure, err := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.SetCookie("ts-cookie", "stale", -1, "", domain, secure, true)
 	c.SetCookie("is-logged-in", "stale", -1, "", domain, false, false)
 	c.JSON(http.StatusOK, "Successfully logged out")
 }
