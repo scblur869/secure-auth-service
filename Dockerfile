@@ -16,6 +16,7 @@ ENV AESKEY=41a93e19086cbb496a6e1b728bd994a9d2070064de899b85e113868f50996de0
 ENV ALLOWED=http://localhost
 ENV IDP_UI=http://localhost:8888
 ENV COOKIE_DOMAIN=localhost
+ENV COOKIE_SECURE=true
 ENV PORT=4000
 ENV GIN_MODE=debug
 COPY --from=build-env /src/auth-svc /app/
