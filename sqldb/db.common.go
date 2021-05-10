@@ -119,12 +119,15 @@ func UpdateAccountInfo(db *sql.DB, user model.User) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.ID); err != nil {
+	res, err := stmt.Exec(user.Username, user.DisplayName, user.Email, user.Role, user.ID)
+	if err != nil {
 		fmt.Println(err)
 	}
-	if err := tx.Commit(); err != nil {
+	a, e := res.RowsAffected()
+	if e != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(a)
 	db.Close()
 	return err
 }
