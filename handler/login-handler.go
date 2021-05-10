@@ -13,8 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const dbName = "authdb"
+
 func FindUserByUserName(user model.User) (model.User, error) {
-	database := sql.SQLConnect()
+	database := sql.Connect2Mysql(dbName)
 
 	query := "SELECT id, username, display_name, email, role, is_enabled, password FROM accounts WHERE username = ?"
 	user, err := sql.QueryByParam(database, query, user.Username)

@@ -6,7 +6,7 @@ import (
 )
 
 func UpdateUser(user model.User) (model.User, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := UpdateAccountInfo(database, user)
 	if err != nil {
@@ -16,7 +16,7 @@ func UpdateUser(user model.User) (model.User, error) {
 }
 
 func SetAccountState(user model.User) (model.User, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := toggleAccountStatus(database, user)
 	if err != nil {
@@ -26,7 +26,7 @@ func SetAccountState(user model.User) (model.User, error) {
 }
 
 func UpdateAccountPassword(user model.User) (model.User, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := UpdatePassword(database, user)
 	if err != nil {
@@ -36,7 +36,7 @@ func UpdateAccountPassword(user model.User) (model.User, error) {
 }
 
 func DeleteUser(user model.User) error {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := DeleteAccount(database, user)
 	if err != nil {
@@ -46,7 +46,7 @@ func DeleteUser(user model.User) error {
 }
 
 func ListAllAccounts() ([]model.User, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	users, err := GetAllAccounts(database)
 	if err != nil {
@@ -56,7 +56,7 @@ func ListAllAccounts() ([]model.User, error) {
 }
 
 func AddNewAccount(user model.User) (model.User, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := AddAccountInfo(database, user)
 	if err != nil {
@@ -66,7 +66,7 @@ func AddNewAccount(user model.User) (model.User, error) {
 }
 
 func AddNewRole(role model.Role) (model.Role, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := AddRole(database, role)
 	if err != nil {
@@ -76,7 +76,7 @@ func AddNewRole(role model.Role) (model.Role, error) {
 }
 
 func ListAllRoles() ([]model.Role, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	roles, err := GetAllRoles(database)
 	if err != nil {
@@ -86,7 +86,7 @@ func ListAllRoles() ([]model.Role, error) {
 }
 
 func DeleteRole(role model.Role) error {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := RemoveRole(database, role)
 	if err != nil {
@@ -96,7 +96,7 @@ func DeleteRole(role model.Role) error {
 }
 
 func UpdateRole(role model.Role) (model.Role, error) {
-	database := SQLConnect()
+	database := Connect2Mysql(dbName)
 
 	err := UpdateCurrentRole(database, role)
 	if err != nil {
