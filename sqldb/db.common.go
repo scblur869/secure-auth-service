@@ -113,7 +113,7 @@ func UpdateAccountInfo(db *sql.DB, user model.User) error {
 	}
 	defer tx.Rollback()
 
-	stmt, err := db.Prepare("UPDATE accounts SET username=?,display_name=?,email=?,role=? WHERE id = ?")
+	stmt, err := db.Prepare("UPDATE accounts SET username=?,display_name=?,email=?,role=? WHERE id=?")
 	if err != nil {
 		fmt.Println(err)
 	}
